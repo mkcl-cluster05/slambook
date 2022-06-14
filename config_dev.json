@@ -1,0 +1,20 @@
+{
+  "app": {
+    "env": "dev",
+    "jwtSecret": "private_key",
+    "tokenExpireDuration": 24,
+    "refreshTokenExpireDuration": 10
+  },
+  "server": {
+    "runMode": "dev",
+    "port": "3000",
+    "readTimeout": 5,
+    "writeTimeout": 5
+  },
+  "database": {
+    "mongo": {
+      "dns": "mongodb://localhost:27017/",
+      "dbName": "slambook"
+    }
+  }
+}
