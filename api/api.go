@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"slambook/api/module/auth"
 	"slambook/datasource"
 	r "slambook/utils/response"
 
@@ -33,4 +34,14 @@ func InitRouter() (*gin.Engine, error) {
 
 func setupHandler(router *gin.Engine, ds *datasource.DataSource) {
 
+	authRoute := initAuthModule(ds)
+
+	authRoute.Route(router)
+
+}
+
+func initAuthModule(ds *datasource.DataSource) auth.AuthRoute {
+	authRepository := auth.NewAuthRepository(ds.MongoDB)
+	authService := auth.NewAuthService(authRepository)
+	return auth.NewAuthRoute(authService)
 }

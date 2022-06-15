@@ -2,11 +2,20 @@ package auth
 
 import "github.com/gin-gonic/gin"
 
-type AuthHandler struct {
+type AuthRoute interface {
+	Route(*gin.Engine)
+}
+type authRoute struct {
 	service AuthService
 }
 
-func (handler *AuthHandler) AuthHandler(router *gin.Engine) {
+func NewAuthRoute(service AuthService) AuthRoute {
+	return &authRoute{
+		service: service,
+	}
+}
+
+func (handler *authRoute) Route(router *gin.Engine) {
 
 	auth := router.Group("/auth")
 	{
