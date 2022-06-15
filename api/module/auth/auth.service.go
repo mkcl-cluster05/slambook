@@ -95,8 +95,8 @@ func (service *authService) loginHandler(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, r.SuccessResponse{
-		Status:  http.StatusCreated,
+	ctx.JSON(http.StatusOK, r.SuccessResponse{
+		Status:  http.StatusOK,
 		Message: "success",
 		Result:  auth,
 	})
