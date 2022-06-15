@@ -1,13 +1,13 @@
 package auth
 
 type Auth struct {
-	AuthId    string `json:"auth_id"`
-	Username  string `json:"username"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-	Role      string `json:"role"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	AuthId    string `bson:"authId" json:"authId"`
+	Username  string `bson:"username" json:"username"`
+	Email     string `bson:"email" json:"email"`
+	Password  string `bson:"password" json:"password"`
+	Role      string `bson:"role" json:"role"`
+	CreatedAt int64  `bson:"createdAt" json:"createdAt"`
+	UpdatedAt int64  `bson:"updatedAt" json:"updatedAt"`
 }
 
 type RegisterDTO struct {
@@ -23,8 +23,8 @@ type LoginDTO struct {
 }
 
 type ChangePasswordDTO struct {
-	OldPassword string `json:"old_password"`
-	NewPassword string `json:"new_password"`
+	OldPassword string `json:"oldPassword"`
+	NewPassword string `json:"newPassword"`
 }
 
 type ForgotPasswordDTO struct {
