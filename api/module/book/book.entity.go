@@ -14,3 +14,7 @@ type BookDTO struct {
 	Name        string `json:"name" binding:"required,min=2,max=50"`
 	Description string `json:"description,omitempty"`
 }
+
+type BookParam struct {
+	BookId string `uri:"bookId" binding:"required"`
+}

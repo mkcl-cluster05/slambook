@@ -1,6 +1,10 @@
 package book
 
-import "github.com/gin-gonic/gin"
+import (
+	"slambook/api/middlewere"
+
+	"github.com/gin-gonic/gin"
+)
 
 type BookRoute interface {
 	Route(*gin.Engine)
@@ -19,10 +23,10 @@ func NewBookRoute(service BookService) BookRoute {
 func (handler *bookRoute) Route(router *gin.Engine) {
 	book := router.Group("/book")
 	{
-		book.POST("/", handler.service.createBookHandler)
-		book.GET("/", handler.service.readAllBookHandler)
-		book.GET("/:bookId", handler.service.readBookHandler)
-		book.PATCH("/:bookId", handler.service.updateBookHandler)
-		book.DELETE("/:bookId", handler.service.deleteBookHandler)
+		book.POST("/", middlewere.Auth(), handler.service.createBookHandler)
+		book.GET("/", middlewere.Auth(), handler.service.readAllBookHandler)
+		book.GET("/:bookId", middlewere.Auth(), handler.service.readBookHandler)
+		book.PATCH("/:bookId", middlewere.Auth(), handler.service.updateBookHandler)
+		book.DELETE("/:bookId", middlewere.Auth(), handler.service.deleteBookHandler)
 	}
 }
