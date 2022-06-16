@@ -59,7 +59,7 @@ func (repo *bookRepository) readAll(ctx context.Context, user middlewere.User) (
 
 	bookCollection := repo.Mongo.Database(DBName).Collection(ColName)
 
-	var books []Book
+	var books []Book = []Book{}
 
 	query := bson.M{
 		"authId":    user.AuthId,
@@ -82,7 +82,7 @@ func (repo *bookRepository) read(ctx context.Context, user middlewere.User, book
 
 	bookCollection := repo.Mongo.Database(DBName).Collection(ColName)
 
-	var book Book
+	var book Book = Book{}
 
 	query := bson.M{
 		"authId":    user.AuthId,
@@ -130,7 +130,7 @@ func (repo *bookRepository) delete(ctx context.Context, user middlewere.User, bo
 
 	bookCollection := repo.Mongo.Database(DBName).Collection(ColName)
 
-	var book Book
+	var book Book = Book{}
 
 	query := bson.M{
 		"authId":    user.AuthId,
@@ -145,11 +145,7 @@ func (repo *bookRepository) delete(ctx context.Context, user middlewere.User, bo
 		},
 	}
 
-	err := bookCollection.FindOneAndUpdate(ctx, query, deleteQuery).Decode(&book)
-
-	if err != nil {
-		return err
-	}
+	_ = bookCollection.FindOneAndUpdate(ctx, query, deleteQuery)
 
 	return nil
 
