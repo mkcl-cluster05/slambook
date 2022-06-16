@@ -1,12 +1,12 @@
 package auth
 
 import (
+	"encoding/json"
 	"net/http"
+	"slambook/api/middlewere"
 	"slambook/utils/binding"
 	r "slambook/utils/response"
-	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -30,28 +30,6 @@ func NewAuthService(authRepository AuthRepository) AuthService {
 	return &authService{
 		authRepository: authRepository,
 	}
-}
-
-func generateJWT(auth Auth) (string, error) {
-
-	var jwtSecret = []byte("jwtSecret")
-	jwtToken := jwt.New(jwt.SigningMethodHS256)
-	claims := jwtToken.Claims.(jwt.MapClaims)
-
-	claims["username"] = auth.Username
-	claims["email"] = auth.Email
-	claims["role"] = auth.Role
-	claims["createdAt"] = auth.CreatedAt
-	claims["iat"] = time.Now().Unix()
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
-
-	token, err := jwtToken.SignedString(jwtSecret)
-
-	if err != nil {
-		return "", err
-	}
-
-	return token, nil
 }
 
 func (service *authService) registerHandler(ctx *gin.Context) {
@@ -153,6 +131,45 @@ func (service *authService) loginHandler(ctx *gin.Context) {
 
 }
 func (service *authService) changePasswordHandler(ctx *gin.Context) {
+
+	var user middlewere.User
+	reqUser := ctx.Request.Header.Get("user")
+	json.Unmarshal([]byte(reqUser), &user)
+
+	var changePasswordDTO ChangePasswordDTO
+	if valid := binding.BindData(ctx, &changePasswordDTO); !valid {
+		return
+	}
+
+	c := ctx.Request.Context()
+	auth, err := service.authRepository.changePassword(c, user, changePasswordDTO)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, r.ErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "error",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	token, err := generateJWT(auth)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, r.ErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "error",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, r.SuccessResponse{
+		Status:  http.StatusCreated,
+		Message: "success",
+		Result: AuthResponse{
+			AccessToken: token,
+		},
+	})
 
 }
 func (service *authService) forgotPasswordHandler(ctx *gin.Context) {

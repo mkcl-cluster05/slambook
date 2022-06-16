@@ -2,12 +2,14 @@ package auth
 
 import (
 	"context"
+	"fmt"
+	"slambook/api/middlewere"
 	"time"
 
 	"github.com/segmentio/ksuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"golang.org/x/crypto/bcrypt"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var (
@@ -19,7 +21,7 @@ type AuthRepository interface {
 	checkUser(context.Context, string) bool
 	register(context.Context, RegisterDTO) (Auth, error)
 	login(context.Context, LoginDTO) (Auth, error)
-	changePassword(context.Context, ChangePasswordDTO)
+	changePassword(context.Context, middlewere.User, ChangePasswordDTO) (Auth, error)
 	forgotPassword(context.Context, ForgotPasswordDTO)
 }
 
@@ -31,22 +33,6 @@ func NewAuthRepository(mongo *mongo.Client) AuthRepository {
 	return &authRepository{
 		Mongo: mongo,
 	}
-}
-
-func HashPassword(password string) (string, error) {
-	pw := []byte(password)
-	result, err := bcrypt.GenerateFromPassword(pw, bcrypt.MinCost)
-	if err != nil {
-		return "", err
-	}
-	return string(result), nil
-}
-
-func ComparePassword(hashPassword string, password string) error {
-	pw := []byte(password)
-	hw := []byte(hashPassword)
-	err := bcrypt.CompareHashAndPassword(hw, pw)
-	return err
 }
 
 func (repo *authRepository) checkUser(ctx context.Context, email string) bool {
@@ -108,12 +94,38 @@ func (repo *authRepository) login(ctx context.Context, loginDTO LoginDTO) (Auth,
 	}
 
 	if err = ComparePassword(auth.Password, loginDTO.Password); err != nil {
-		return Auth{}, err
+		return Auth{}, fmt.Errorf("invalid credentails")
 	}
 
 	return auth, nil
 }
-func (repo *authRepository) changePassword(ctx context.Context, changePasswordDTO ChangePasswordDTO) {
+func (repo *authRepository) changePassword(ctx context.Context, user middlewere.User, changePasswordDTO ChangePasswordDTO) (Auth, error) {
+
+	authCollection := repo.Mongo.Database(DBName).Collection(ColName)
+
+	var auth Auth
+
+	hashPassword, err := HashPassword(changePasswordDTO.NewPassword)
+
+	if err != nil {
+		return Auth{}, err
+	}
+
+	query := bson.M{
+		"authId": user.AuthId,
+	}
+	update := bson.M{
+		"$set": bson.M{
+			"password":  hashPassword,
+			"updatedAt": time.Now().Unix(),
+		},
+	}
+	err = authCollection.FindOneAndUpdate(ctx, query, update, options.FindOneAndUpdate().SetReturnDocument(options.After)).Decode(&auth)
+	if err != nil {
+		return Auth{}, nil
+	}
+
+	return auth, nil
 
 }
 func (repo *authRepository) forgotPassword(ctx context.Context, forgotPasswordDTO ForgotPasswordDTO) {
