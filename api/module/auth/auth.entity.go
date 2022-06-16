@@ -11,26 +11,25 @@ type Auth struct {
 }
 
 type RegisterDTO struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username string `json:"username" binding:"required,min=2,max=25"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8,max=20"`
 }
 
 type LoginDTO struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8,max=20"`
 }
 
 type ChangePasswordDTO struct {
-	OldPassword string `json:"oldPassword"`
-	NewPassword string `json:"newPassword"`
+	OldPassword string `json:"oldPassword" binding:"required,min=8,max=20"`
+	NewPassword string `json:"newPassword" binding:"required,min=8,max=20"`
 }
 
 type ForgotPasswordDTO struct {
-	Email string `json:"email"`
+	Email string `json:"email" binding:"required,email"`
 }
 
 type AuthResponse struct {
-	AccessToken string `json:"access_token"`
+	AccessToken string `json:"accessToken"`
 }
