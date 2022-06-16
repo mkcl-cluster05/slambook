@@ -111,9 +111,11 @@ func (repo *bookRepository) update(ctx context.Context, user middlewere.User, bo
 	}
 
 	updateQuery := bson.M{
-		"name":        bookDTO.Name,
-		"description": bookDTO.Description,
-		"updatedAt":   time.Now().Unix(),
+		"$set": bson.M{
+			"name":        bookDTO.Name,
+			"description": bookDTO.Description,
+			"updatedAt":   time.Now().Unix(),
+		},
 	}
 
 	err := bookCollection.FindOneAndUpdate(ctx, query, updateQuery).Decode(&book)
@@ -137,8 +139,10 @@ func (repo *bookRepository) delete(ctx context.Context, user middlewere.User, bo
 	}
 
 	deleteQuery := bson.M{
-		"isDeleted": true,
-		"updatedAt": time.Now().Unix(),
+		"$set": bson.M{
+			"isDeleted": true,
+			"updatedAt": time.Now().Unix(),
+		},
 	}
 
 	err := bookCollection.FindOneAndUpdate(ctx, query, deleteQuery).Decode(&book)
