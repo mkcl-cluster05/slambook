@@ -1,6 +1,10 @@
 package auth
 
-import "github.com/gin-gonic/gin"
+import (
+	"slambook/api/middlewere"
+
+	"github.com/gin-gonic/gin"
+)
 
 type AuthRoute interface {
 	Route(*gin.Engine)
@@ -21,8 +25,7 @@ func (handler *authRoute) Route(router *gin.Engine) {
 	{
 		auth.POST("/register", handler.service.registerHandler)
 		auth.POST("/login", handler.service.loginHandler)
-		auth.POST("/changePassword", handler.service.changePasswordHandler)
-		auth.POST("/forgotPassword", handler.service.forgotPasswordHandler)
+		auth.POST("/change-password", middlewere.Auth(), handler.service.changePasswordHandler)
+		auth.POST("/forgot-password", handler.service.forgotPasswordHandler)
 	}
-
 }

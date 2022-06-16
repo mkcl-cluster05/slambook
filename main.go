@@ -8,6 +8,8 @@ import (
 	"slambook/api"
 	"slambook/utils/config"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -53,6 +55,10 @@ func setupEnvironment() error {
 
 	if *env != "dev" && *env != "stg" && *env != "prod" {
 		return fmt.Errorf("invalid environment type. check --help for to check env options")
+	}
+
+	if *env == "prod" {
+		gin.SetMode(gin.ReleaseMode)
 	}
 
 	if err := config.Setup(*env); err != nil {

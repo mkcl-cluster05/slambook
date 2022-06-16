@@ -4,13 +4,15 @@ import (
 	"net/http"
 	"slambook/utils/binding"
 	r "slambook/utils/response"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
 const (
-	USER_FOUND     = "user already present"
-	USER_NOT_FOUND = "user not present"
+	USER_FOUND     = "account exists"
+	USER_NOT_FOUND = "account not exists"
 )
 
 type AuthService interface {
@@ -28,6 +30,28 @@ func NewAuthService(authRepository AuthRepository) AuthService {
 	return &authService{
 		authRepository: authRepository,
 	}
+}
+
+func generateJWT(auth Auth) (string, error) {
+
+	var jwtSecret = []byte("jwtSecret")
+	jwtToken := jwt.New(jwt.SigningMethodHS256)
+	claims := jwtToken.Claims.(jwt.MapClaims)
+
+	claims["username"] = auth.Username
+	claims["email"] = auth.Email
+	claims["role"] = auth.Role
+	claims["createdAt"] = auth.CreatedAt
+	claims["iat"] = time.Now().Unix()
+	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+
+	token, err := jwtToken.SignedString(jwtSecret)
+
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
 }
 
 func (service *authService) registerHandler(ctx *gin.Context) {
@@ -59,10 +83,23 @@ func (service *authService) registerHandler(ctx *gin.Context) {
 		return
 	}
 
+	token, err := generateJWT(auth)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, r.ErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "error",
+			Error:   err.Error(),
+		})
+		return
+	}
+
 	ctx.JSON(http.StatusCreated, r.SuccessResponse{
 		Status:  http.StatusCreated,
 		Message: "success",
-		Result:  auth,
+		Result: AuthResponse{
+			AccessToken: token,
+		},
 	})
 }
 
@@ -95,10 +132,23 @@ func (service *authService) loginHandler(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, r.SuccessResponse{
-		Status:  http.StatusOK,
+	token, err := generateJWT(auth)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, r.ErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "error",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, r.SuccessResponse{
+		Status:  http.StatusCreated,
 		Message: "success",
-		Result:  auth,
+		Result: AuthResponse{
+			AccessToken: token,
+		},
 	})
 
 }
