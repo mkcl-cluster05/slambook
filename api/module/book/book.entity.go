@@ -7,7 +7,7 @@ type Book struct {
 	Description string `json:"description" bson:"description"`
 	CreatedAt   int64  `json:"createdAt" bson:"createdAt"`
 	UpdatedAt   int64  `json:"updatedAt" bson:"updatedAt"`
-	IsDeleted   bool   `json:"isDeleted"`
+	IsDeleted   bool   `json:"isDeleted" bson:"isDeleted"`
 }
 
 type BookDTO struct {
