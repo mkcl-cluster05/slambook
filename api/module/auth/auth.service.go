@@ -174,4 +174,30 @@ func (service *authService) changePasswordHandler(ctx *gin.Context) {
 }
 func (service *authService) forgotPasswordHandler(ctx *gin.Context) {
 
+	var user middlewere.User
+	reqUser := ctx.Request.Header.Get("user")
+	json.Unmarshal([]byte(reqUser), &user)
+
+	var forgotPasswordDTO ForgotPasswordDTO
+	if valid := binding.BindData(ctx, &forgotPasswordDTO); !valid {
+		return
+	}
+
+	isUserPresent := service.authRepository.checkUser(ctx, forgotPasswordDTO.Email)
+
+	if !isUserPresent {
+		ctx.JSON(http.StatusBadRequest, r.ErrorResponse{
+			Status:  http.StatusBadRequest,
+			Message: "error",
+			Error:   USER_NOT_FOUND,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, r.SuccessResponse{
+		Status:  http.StatusOK,
+		Message: "success",
+		Result:  "check your email to reset passowrd",
+	})
+
 }

@@ -22,7 +22,6 @@ type AuthRepository interface {
 	register(context.Context, RegisterDTO) (Auth, error)
 	login(context.Context, LoginDTO) (Auth, error)
 	changePassword(context.Context, middlewere.User, ChangePasswordDTO) (Auth, error)
-	forgotPassword(context.Context, ForgotPasswordDTO)
 }
 
 type authRepository struct {
@@ -126,8 +125,5 @@ func (repo *authRepository) changePassword(ctx context.Context, user middlewere.
 	}
 
 	return auth, nil
-
-}
-func (repo *authRepository) forgotPassword(ctx context.Context, forgotPasswordDTO ForgotPasswordDTO) {
 
 }
