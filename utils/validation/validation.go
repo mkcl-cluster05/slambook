@@ -79,3 +79,37 @@ func BindData(ctx *gin.Context, req interface{}) bool {
 	return true
 
 }
+
+func BindUri(ctx *gin.Context, req interface{}) bool {
+
+	if err := ctx.ShouldBindUri(req); err != nil {
+
+		if errs, ok := err.(validator.ValidationErrors); ok {
+
+			var invalidArgs []string
+			for _, fe := range errs {
+				invalidArgs = append(invalidArgs, getErrorMessage(fe))
+			}
+
+			ctx.JSON(http.StatusBadRequest, r.ErrorResponse{
+				Status:  http.StatusBadRequest,
+				Message: "error",
+				Error:   invalidArgs,
+			})
+
+			return false
+
+		}
+
+		ctx.JSON(http.StatusInternalServerError, r.ErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "error",
+			Error:   "internal server error",
+		})
+
+		return false
+
+	}
+	return true
+
+}
