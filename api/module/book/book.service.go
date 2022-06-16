@@ -78,8 +78,8 @@ func (service *bookService) readAllBookHandler(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, r.SuccessResponse{
-		Status:  http.StatusCreated,
+	ctx.JSON(http.StatusOK, r.SuccessResponse{
+		Status:  http.StatusOK,
 		Message: "success",
 		Result:  books,
 	})
@@ -109,8 +109,8 @@ func (service *bookService) readBookHandler(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, r.SuccessResponse{
-		Status:  http.StatusCreated,
+	ctx.JSON(http.StatusOK, r.SuccessResponse{
+		Status:  http.StatusOK,
 		Message: "success",
 		Result:  book,
 	})
@@ -145,8 +145,8 @@ func (service *bookService) updateBookHandler(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, r.SuccessResponse{
-		Status:  http.StatusCreated,
+	ctx.JSON(http.StatusOK, r.SuccessResponse{
+		Status:  http.StatusOK,
 		Message: "success",
 		Result:  book,
 	})
@@ -178,8 +178,8 @@ func (service *bookService) deleteBookHandler(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, r.SuccessResponse{
-		Status:  http.StatusCreated,
+	ctx.JSON(http.StatusOK, r.SuccessResponse{
+		Status:  http.StatusOK,
 		Message: "success",
 		Result:  "deleted successfully",
 	})
