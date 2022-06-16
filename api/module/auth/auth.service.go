@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"slambook/api/middlewere"
-	"slambook/utils/binding"
 	r "slambook/utils/response"
+	"slambook/utils/validation"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,7 +35,7 @@ func NewAuthService(authRepository AuthRepository) AuthService {
 func (service *authService) registerHandler(ctx *gin.Context) {
 
 	var registerDTO RegisterDTO
-	if valid := binding.BindData(ctx, &registerDTO); !valid {
+	if valid := validation.BindData(ctx, &registerDTO); !valid {
 		return
 	}
 
@@ -84,7 +84,7 @@ func (service *authService) registerHandler(ctx *gin.Context) {
 func (service *authService) loginHandler(ctx *gin.Context) {
 
 	var loginDTO LoginDTO
-	if valid := binding.BindData(ctx, &loginDTO); !valid {
+	if valid := validation.BindData(ctx, &loginDTO); !valid {
 		return
 	}
 
@@ -137,7 +137,7 @@ func (service *authService) changePasswordHandler(ctx *gin.Context) {
 	json.Unmarshal([]byte(reqUser), &user)
 
 	var changePasswordDTO ChangePasswordDTO
-	if valid := binding.BindData(ctx, &changePasswordDTO); !valid {
+	if valid := validation.BindData(ctx, &changePasswordDTO); !valid {
 		return
 	}
 
@@ -179,7 +179,7 @@ func (service *authService) forgotPasswordHandler(ctx *gin.Context) {
 	json.Unmarshal([]byte(reqUser), &user)
 
 	var forgotPasswordDTO ForgotPasswordDTO
-	if valid := binding.BindData(ctx, &forgotPasswordDTO); !valid {
+	if valid := validation.BindData(ctx, &forgotPasswordDTO); !valid {
 		return
 	}
 

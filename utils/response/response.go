@@ -1,13 +1,13 @@
 package r
 
 type ErrorResponse struct {
-	Status  int         `json:"status,omitempty"`
-	Message string      `json:"message,omitempty"`
-	Error   interface{} `json:"error,omitempty"`
+	Status  int         `json:"status"`
+	Message string      `json:"message"`
+	Error   interface{} `json:"error"`
 }
 
 type SuccessResponse struct {
-	Status  int         `json:"status,omitempty"`
-	Message string      `json:"message,omitempty"`
-	Result  interface{} `json:"data,omitempty"`
+	Status  int         `json:"status"`
+	Message string      `json:"message"`
+	Result  interface{} `json:"data"`
 }
