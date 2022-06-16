@@ -2,7 +2,6 @@ package book
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"slambook/api/middlewere"
 	r "slambook/utils/response"
@@ -158,8 +157,6 @@ func (service *bookService) deleteBookHandler(ctx *gin.Context) {
 	if valid := validation.BindUri(ctx, &bookParam); !valid {
 		return
 	}
-
-	fmt.Printf("%+v", bookParam)
 
 	var user middlewere.User
 	reqUser := ctx.Request.Header.Get("user")
