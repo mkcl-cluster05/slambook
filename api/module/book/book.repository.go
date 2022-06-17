@@ -8,6 +8,7 @@ import (
 	"github.com/segmentio/ksuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var (
@@ -82,14 +83,13 @@ func (repo *bookRepository) read(ctx context.Context, user middlewere.User, book
 
 	bookCollection := repo.Mongo.Database(DBName).Collection(ColName)
 
-	var book Book = Book{}
-
 	query := bson.M{
 		"authId":    user.AuthId,
-		"bookId":    book.BookId,
+		"bookId":    bookId,
 		"isDeleted": false,
 	}
 
+	var book Book = Book{}
 	err := bookCollection.FindOne(ctx, query).Decode(&book)
 
 	if err != nil {
@@ -102,11 +102,9 @@ func (repo *bookRepository) update(ctx context.Context, user middlewere.User, bo
 
 	bookCollection := repo.Mongo.Database(DBName).Collection(ColName)
 
-	var book Book
-
 	query := bson.M{
 		"authId":    user.AuthId,
-		"bookId":    book.BookId,
+		"bookId":    bookId,
 		"isDeleted": false,
 	}
 
@@ -118,7 +116,8 @@ func (repo *bookRepository) update(ctx context.Context, user middlewere.User, bo
 		},
 	}
 
-	err := bookCollection.FindOneAndUpdate(ctx, query, updateQuery).Decode(&book)
+	var book Book
+	err := bookCollection.FindOneAndUpdate(ctx, query, updateQuery, options.FindOneAndUpdate().SetReturnDocument(options.After)).Decode(&book)
 
 	if err != nil {
 		return Book{}, err
@@ -130,11 +129,9 @@ func (repo *bookRepository) delete(ctx context.Context, user middlewere.User, bo
 
 	bookCollection := repo.Mongo.Database(DBName).Collection(ColName)
 
-	var book Book = Book{}
-
 	query := bson.M{
 		"authId":    user.AuthId,
-		"bookId":    book.BookId,
+		"bookId":    bookId,
 		"isDeleted": false,
 	}
 
