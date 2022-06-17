@@ -1,7 +1,9 @@
 package question
 
 import (
+	"encoding/json"
 	"net/http"
+	"slambook/api/middlewere"
 	r "slambook/utils/response"
 	"slambook/utils/validation"
 
@@ -32,7 +34,7 @@ func NewQuestionService(questionRepository QuestionRepository) QuestionService {
 	}
 }
 
-func (repo *questionService) createQuestionHandler(ctx *gin.Context) {
+func (service *questionService) createQuestionHandler(ctx *gin.Context) {
 
 	var questionDTO QuestionDTO
 	if valid := validation.Bind(ctx, &questionDTO); !valid {
@@ -43,19 +45,41 @@ func (repo *questionService) createQuestionHandler(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, r.SuccessResponse{
-		Status:  http.StatusOK,
+	var questionParam QuestionParam
+	if valid := validation.BindUri(ctx, &questionParam); !valid {
+		return
+	}
+
+	var user middlewere.User
+	reqUser := ctx.Request.Header.Get("user")
+	json.Unmarshal([]byte(reqUser), &user)
+
+	c := ctx.Request.Context()
+
+	question, err := service.questionRepository.create(c, user, questionParam, questionDTO)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, r.ErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "error",
+			Error:   err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, r.SuccessResponse{
+		Status:  http.StatusCreated,
 		Message: "success",
-		Result:  "ok",
+		Result:  question,
 	})
 
 }
-func (repo *questionService) readQuestionHandler(ctx *gin.Context) {
+func (service *questionService) readQuestionHandler(ctx *gin.Context) {
 
 }
-func (repo *questionService) updateQuestionHandler(ctx *gin.Context) {
+func (service *questionService) updateQuestionHandler(ctx *gin.Context) {
 
 }
-func (repo *questionService) deleteQuestionHandler(ctx *gin.Context) {
+func (service *questionService) deleteQuestionHandler(ctx *gin.Context) {
 
 }
