@@ -2,28 +2,21 @@ package question
 
 import (
 	"fmt"
-	"reflect"
 
 	"github.com/go-playground/validator/v10"
 )
 
-func QuetionTypeValidation(v *validator.Validate,
-	topStruct reflect.Value,
-	currentStructOrField reflect.Value,
-	field reflect.Value,
-	fieldType reflect.Type,
-	fieldKind reflect.Kind,
-	params string) bool {
+var QuestionType = map[string]string{
+	"MCQ":         "MCQ",
+	"Descriptive": "Descriptive",
+	"Image":       "Image",
+	"Video":       "Video",
+	"Audio":       "Audio",
+	"GIF":         "GIF",
+}
 
-	fmt.Printf("topStruct %v  currentStructOrField %v  field %v  fieldType %v  fieldKind %v  params %v  ",
-		topStruct,
-		currentStructOrField,
-		field,
-		fieldType,
-		fieldKind,
-		params,
-	)
-
-	return true
-
+var QuestionTypeValidation validator.Func = func(fl validator.FieldLevel) bool {
+	qType := fmt.Sprintf("%s", fl.Field())
+	_, ok := QuestionType[qType]
+	return ok
 }

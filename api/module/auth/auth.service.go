@@ -35,7 +35,7 @@ func NewAuthService(authRepository AuthRepository) AuthService {
 func (service *authService) registerHandler(ctx *gin.Context) {
 
 	var registerDTO RegisterDTO
-	if valid := validation.BindData(ctx, &registerDTO); !valid {
+	if valid := validation.Bind(ctx, &registerDTO); !valid {
 		return
 	}
 
@@ -84,7 +84,7 @@ func (service *authService) registerHandler(ctx *gin.Context) {
 func (service *authService) loginHandler(ctx *gin.Context) {
 
 	var loginDTO LoginDTO
-	if valid := validation.BindData(ctx, &loginDTO); !valid {
+	if valid := validation.Bind(ctx, &loginDTO); !valid {
 		return
 	}
 
@@ -137,7 +137,7 @@ func (service *authService) changePasswordHandler(ctx *gin.Context) {
 	json.Unmarshal([]byte(reqUser), &user)
 
 	var changePasswordDTO ChangePasswordDTO
-	if valid := validation.BindData(ctx, &changePasswordDTO); !valid {
+	if valid := validation.Bind(ctx, &changePasswordDTO); !valid {
 		return
 	}
 
@@ -179,7 +179,7 @@ func (service *authService) forgotPasswordHandler(ctx *gin.Context) {
 	json.Unmarshal([]byte(reqUser), &user)
 
 	var forgotPasswordDTO ForgotPasswordDTO
-	if valid := validation.BindData(ctx, &forgotPasswordDTO); !valid {
+	if valid := validation.Bind(ctx, &forgotPasswordDTO); !valid {
 		return
 	}
 

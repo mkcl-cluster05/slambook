@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -29,11 +30,13 @@ func getErrorMessage(fe validator.FieldError) string {
 		return "invalid email format"
 	case "len":
 		return fmt.Sprintf("%s must be %s characters long", jkb(fe.Field()), fe.Param())
+	case "questionType":
+		return fmt.Sprintf("%s must be of type %s ", jkb(fe.Field()), "MCQ,Descriptive,Image,Audio,Video,GIF")
 	}
 	return fmt.Sprintf("%s is not valid", jkb(fe.Field()))
 }
 
-func BindData(ctx *gin.Context, req interface{}) bool {
+func Bind(ctx *gin.Context, req interface{}) bool {
 
 	if ctx.ContentType() != "application/json" {
 
@@ -70,7 +73,7 @@ func BindData(ctx *gin.Context, req interface{}) bool {
 		ctx.JSON(http.StatusInternalServerError, r.ErrorResponse{
 			Status:  http.StatusInternalServerError,
 			Message: "error",
-			Error:   "internal server error",
+			Error:   err.Error(),
 		})
 
 		return false
@@ -104,12 +107,44 @@ func BindUri(ctx *gin.Context, req interface{}) bool {
 		ctx.JSON(http.StatusInternalServerError, r.ErrorResponse{
 			Status:  http.StatusInternalServerError,
 			Message: "error",
-			Error:   "internal server error",
+			Error:   err.Error(),
 		})
 
 		return false
 
 	}
 	return true
+}
 
+func BindWith(ctx *gin.Context, req interface{}) bool {
+
+	if err := ctx.ShouldBindWith(req, binding.Query); err != nil {
+
+		if errs, ok := err.(validator.ValidationErrors); ok {
+
+			var invalidArgs []string
+			for _, fe := range errs {
+				invalidArgs = append(invalidArgs, getErrorMessage(fe))
+			}
+
+			ctx.JSON(http.StatusBadRequest, r.ErrorResponse{
+				Status:  http.StatusBadRequest,
+				Message: "error",
+				Error:   invalidArgs,
+			})
+
+			return false
+
+		}
+
+		ctx.JSON(http.StatusInternalServerError, r.ErrorResponse{
+			Status:  http.StatusInternalServerError,
+			Message: "error",
+			Error:   err.Error(),
+		})
+
+		return false
+
+	}
+	return true
 }
