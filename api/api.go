@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"slambook/api/module/auth"
 	"slambook/api/module/book"
+	"slambook/api/module/question"
 	"slambook/datasource"
 	r "slambook/utils/response"
 
@@ -37,6 +38,7 @@ func setupHandler(router *gin.Engine, ds *datasource.DataSource) {
 
 	initAuthModule(router, ds)
 	initBookModule(router, ds)
+	initQuestionModule(router, ds)
 
 }
 
@@ -52,4 +54,11 @@ func initBookModule(router *gin.Engine, ds *datasource.DataSource) {
 	bookService := book.NewBookService(bookRepository)
 	bookRoute := book.NewBookRoute(bookService)
 	bookRoute.Route(router)
+}
+
+func initQuestionModule(router *gin.Engine, ds *datasource.DataSource) {
+	questionRepository := question.NewQuestionRepository(ds.MongoDB)
+	questionService := question.NewQuestionService(questionRepository)
+	questionRoute := question.NewQuetionRoute(questionService)
+	questionRoute.Route(router)
 }
