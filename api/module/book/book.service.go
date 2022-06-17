@@ -31,7 +31,7 @@ func NewBookService(bookRepository BookRepository) BookService {
 func (service *bookService) createBookHandler(ctx *gin.Context) {
 
 	var bookDTO BookDTO
-	if valid := validation.BindData(ctx, &bookDTO); !valid {
+	if valid := validation.Bind(ctx, &bookDTO); !valid {
 		return
 	}
 
@@ -123,7 +123,7 @@ func (service *bookService) updateBookHandler(ctx *gin.Context) {
 	}
 
 	var bookDTO BookDTO
-	if valid := validation.BindData(ctx, &bookDTO); !valid {
+	if valid := validation.Bind(ctx, &bookDTO); !valid {
 		return
 	}
 
